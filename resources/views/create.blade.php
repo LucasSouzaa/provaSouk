@@ -2,7 +2,7 @@
 
 @section('title', 'Listagem de usuários')
 
-
+<meta name="csrf-token" content="{{ Session::token() }}">
 
 @section('content_header')
     <h1>Novo Usuario</h1>
@@ -19,7 +19,7 @@
             <div class="row">
 
                     <div class="col-md-6">
-                        <form action="{{URL::to('/store')}}" method="POST" id="userForm" onsubmit="return validForm()">
+                        <form action="{{URL::to('/store')}}" method="POST" id="userForm">
                             @csrf
                         <div class="form-group">
                             <label>Nome</label>
@@ -56,7 +56,10 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Imagem</label>
-                            <input class="form-control" type="file" accept="image/*" name="image" required="">
+                            <input class="form-control" type="file" accept="image/*" name="imageUploader" required="">
+                        </div>
+                        <div>
+                            <img name="imgUploaded" height="100" width="100" />
                         </div>
                     </div>
 

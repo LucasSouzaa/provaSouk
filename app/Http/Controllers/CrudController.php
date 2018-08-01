@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\User;
 use Illuminate\Support\Facades\Input;
 use App\Rules\CpfValidate;
+use App\Rules\PasswordValidate;
 
 class CrudController extends Controller
 {
@@ -52,8 +53,9 @@ class CrudController extends Controller
                 'email'            => 'required|unique:users',
                 'birthdate'        => 'required',
                 'cpf'              => ['required', 'unique:users', new CpfValidate],
-                'password'         => 'required',
-                'retypepassword'   => 'required'
+                'password'         => ['required', new PasswordValidate($request->password, $request->retypepassword)],
+                'retypepassword'   => 'required',
+                'image'            => 'required'
                 ],
                 ['name.required'     => "O campo nome deve ser preenchido",
                 'email.required'     => 'O campo email deve ser preenchido',
@@ -64,16 +66,68 @@ class CrudController extends Controller
                 ]);
 
 
+        $user = new User();
+        $user->name      = $request->name;
+        $user->email     = $request->email;
+        $user->cpf       = $request->cpf;
+        $user->birthdate = $request->birthdate;
+        $user->password  = bcrypt($request->password);
+        $user->image     = $request->image;
+        $user->status    = 1;
 
-        return redirect()->back()->with('success', 'Atendente adicionado');
+        $user->save();
+
+        return redirect()->back()->with('success', 'Usuário cadastrado com sucesso!');
 
     }
 
-    public function destroy($id){
-        $seller = Clerk::find($id);
-        Clerk::destroy($seller->id);
-        User::destroy($seller->user->id);
+    public function edit($id){
+        $user = User::find($id);
+        return view('edit')
+            ->with('user', $user);
+    }
 
-        return redirect()->back()->with('success', 'Atendente removido com sucesso');
+    public function update(Request $request, $id){
+
+
+        $request->validate([
+            'name'             => 'required',
+            'email'            => 'required|unique:users,email,'.$id,
+            'birthdate'        => 'required',
+            'cpf'              => ['required', 'unique:users,cpf,'.$id, new CpfValidate],
+            'password'         => ['required', new PasswordValidate($request->password, $request->retypepassword)],
+            'retypepassword'   => 'required',
+            'image'            => 'required'
+        ],
+            ['name.required'     => "O campo nome deve ser preenchido",
+                'email.required'     => 'O campo email deve ser preenchido',
+                'email.unique'       => 'Já existe um usuário com este email',
+                'cpf.required'       => 'O campo cpf deve ser preenchido',
+                'cpf.unique'         => 'Já existe um usuário com este cpf',
+                'birthdate.required' => 'O campo Data de nascimento deve ser preenchidoo',
+            ]);
+
+
+        $user = User::find($id);
+        $user->name      = $request->name;
+        $user->email     = $request->email;
+        $user->cpf       = $request->cpf;
+        $user->birthdate = $request->birthdate;
+        $user->password  = bcrypt($request->password);
+        $user->image     = $request->image;
+        $user->status    = 1;
+
+        $user->save();
+
+        return redirect()->back()->with('success', 'Usuário editado com sucesso!');
+
+    }
+
+    public function toggle($id){
+        $user = User::find($id);
+        $user->status = !$user->status;
+        $user->save();
+
+        return redirect()->back();
     }
 }

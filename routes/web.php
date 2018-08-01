@@ -15,6 +15,11 @@ Route::prefix('/')->group(function () {
     Route::get('/', 'CrudController@index');
     Route::get('/create', 'CrudController@create');
     Route::post('/store', 'CrudController@store');
+
+    Route::get('/edit/{id}', 'CrudController@edit');
+    Route::post('/update/{id}', 'CrudController@update');
+
+    Route::get('/toggle/{id}', 'CrudController@toggle');
+
     Route::match(['get', 'post'],'/find', 'CrudController@search');
-    Route::get('/remove/{id}', 'CrudController@destroy');
 });

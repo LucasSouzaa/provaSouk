@@ -17,11 +17,11 @@
     <br/>
     <div class="row">
         <div class="col-md-12">
-            <form action="{{URL::to('/find')}}" method="POST">
+            <form action="{{URL::to('/find')}}" method="POST" id="formSearch">
                 @csrf
                 <div class="input-group" style="padding-bottom: 15px">
                     <input class="form-control" name="search" placeholder="Busque por nome ou email ou cpf ou deixe em branco para mostrar todos">
-                    <span class="btn btn-primary input-group-addon" id="basic-addon2">Buscar</span>
+                    <span onclick="$('#formSearch').submit();" class="btn btn-primary input-group-addon" id="basic-addon2">Buscar</span>
                 </div>
             </form>
         </div>
@@ -42,9 +42,12 @@
                     <td style="vertical-align: middle">{{$value->name}}</td>
                     <td style="vertical-align: middle">{{$value->email}}</td>
                     <td style="vertical-align: middle">{{$value->cpf}}</td>
-                    <td style="vertical-align: middle">{{$value->birthdate}}</td>
-                    <td><img height="50" src="{{$value->image}}"></td>
-                    <td><i class="fa {{$value->status ? 'text-green fa-check' : 'text-red fa-times'}}"></i></td>
+                    <td style="vertical-align: middle">{{date('d-m-Y', strtotime($value->birthdate))}}</td>
+                    <td style="vertical-align: middle"><img height="50" src="{{$value->image}}"></td>
+                    <td style="vertical-align: middle; cursor: pointer;">
+                        <a href="{{URL::to('/toggle/'.$value->id)}}"><i class="fa {{$value->status ? 'text-green fa-check' : 'text-red fa-times'}}"></i></a>
+                        <a href="{{URL::to('/edit/'.$value->id)}}"><i class="fa fa-edit text-blue"></i></a>
+                    </td>
                 </tr>
                 @endforeach
             </tbody>
